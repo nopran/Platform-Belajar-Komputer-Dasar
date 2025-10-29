@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Learning TIK - MTsN 6 Pesisir Selatan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        .badge-earned { 
+            filter: grayscale(0);
+            transform: scale(1);
+            transition: all 0.3s;
+        }
+        .badge-locked { 
+            filter: grayscale(100%) opacity(0.3);
+            transform: scale(0.9);
+        }
+        .badge-earned:hover {
+            transform: scale(1.1);
+        }
+        .progress-ring {
+            transition: stroke-dashoffset 0.5s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">E-Learning TIK</h1>
+                <p class="text-gray-600">MTsN 6 Pesisir Selatan</p>
+                <p class="text-sm text-gray-500 mt-1">Panduan Dasar Komputer - Kelas 8</p>
+            </div>
+            
+            <form onsubmit="login(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" required 
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        placeholder="Masukkan username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" required
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        placeholder="Masukkan password">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition">
+                    Masuk
+                </button>
+            </form>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg text-sm">
+                <p class="font-semibold text-blue-800 mb-2">Demo Login:</p>
+                <p class="text-blue-700">Guru: <span class="font-mono">guru1</span> / <span class="font-mono">password123</span></p>
+                <p class="text-blue-700">Siswa: <span class="font-mono">dika_viiia</span> / <span class="font-mono">pass123</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="hidden">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <span class="ml-3 text-xl font-bold text-gray-800">E-Learning TIK</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-semibold text-gray-800" id="studentNameNav"></p>
+                            <p class="text-xs text-gray-600" id="studentClassNav"></p>
+                        </div>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Dashboard Stats -->
+            <div id="studentStats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <div class="flex flex-wrap gap-2 mb-6 border-b">
+                    <button onclick="showStudentTab('materi')" id="tabMateri" class="px-6 py-3 font-semibold border-b-2 border-blue-600 text-blue-600">
+                        📚 Materi
+                    </button>
+                    <button onclick="showStudentTab('absensi')" id="tabAbsensi" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                        ✅ Absensi Saya
+                    </button>
+                    <button onclick="showStudentTab('leaderboard')" id="tabLeaderboard" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                        🏆 Leaderboard
+                    </button>
+                    <button onclick="showStudentTab('badges')" id="tabBadges" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                        🎖️ Badge Saya
+                    </button>
+                    <button onclick="showStudentTab('feedback')" id="tabFeedback" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                        💬 Feedback
+                    </button>
+                </div>
+
+                <div id="tabContentMateri" class="tab-content">
+                    <div id="materiList"></div>
+                </div>
+
+                <div id="tabContentAbsensi" class="tab-content hidden">
+                    <div id="absensiSiswaContent"></div>
+                </div>
+
+                <div id="tabContentLeaderboard" class="tab-content hidden">
+                    <div id="leaderboardContent"></div>
+                </div>
+
+                <div id="tabContentBadges" class="tab-content hidden">
+                    <div id="badgesContent"></div>
+                </div>
+
+                <div id="tabContentFeedback" class="tab-content hidden">
+                    <div id="feedbackForm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div id="teacherDashboard" class="hidden">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="ml-3 text-xl font-bold text-gray-800">Dashboard Guru</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-semibold text-gray-800">Muhammad Nopran, S.Pd.</p>
+                            <p class="text-xs text-gray-600">Guru TIK</p>
+                        </div>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm">Total Siswa</p>
+                            <p class="text-3xl font-bold mt-2">32</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm">Tingkat Kelulusan</p>
+                            <p class="text-3xl font-bold mt-2">87%</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-yellow-100 text-sm">Rata-rata Nilai</p>
+                            <p class="text-3xl font-bold mt-2">76.5</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm">Rata-rata Kehadiran</p>
+                            <p class="text-3xl font-bold mt-2">95%</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Filter -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <span class="font-semibold text-gray-700">Filter Kelas:</span>
+                    <button onclick="filterClass('all')" id="filterAll" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold transition">
+                        Semua Kelas
+                    </button>
+                    <button onclick="filterClass('VIIIa')" id="filterVIIIa" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">
+                        Kelas 8A
+                    </button>
+                    <button onclick="filterClass('VIIIb')" id="filterVIIIb" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">
+                        Kelas 8B
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <div class="flex flex-wrap gap-2 mb-6 border-b">
+                    <button onclick="showTeacherTab('analytics')" id="teacherTabAnalytics" class="px-6 py-3 font-semibold border-b-2 border-purple-600 text-purple-600">
+                        📊 Analytics
+                    </button>
+                    <button onclick="showTeacherTab('students')" id="teacherTabStudents" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600 transition">
+                        👥 Data Siswa
+                    </button>
+                    <button onclick="showTeacherTab('absensi')" id="teacherTabAbsensi" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600 transition">
+                        ✅ Absensi
+                    </button>
+                    <button onclick="showTeacherTab('feedbacks')" id="teacherTabFeedbacks" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600 transition">
+                        💬 Feedback Siswa
+                    </button>
+                </div>
+
+                <div id="teacherTabContentAnalytics" class="tab-content">
+                    <div id="analyticsContent"></div>
+                </div>
+
+                <div id="teacherTabContentStudents" class="tab-content hidden">
+                    <div id="studentsTableContent"></div>
+                </div>
+
+                <div id="teacherTabContentAbsensi" class="tab-content hidden">
+                    <div id="absensiContent"></div>
+                </div>
+
+                <div id="teacherTabContentFeedbacks" class="tab-content hidden">
+                    <div id="feedbacksContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Materi/Kuis -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Sistem
+        const SYSTEM_DATA = {
+            students: [
+                // Kelas VIIIa
+                {username: 'dika_viiia', password: 'pass123', nama: 'DIKA SAPUTRA', kelas: 'VIIIa', gender: 'L'},
+                {username: 'fino_viiia', password: 'pass123', nama: 'FINO PRATAMA', kelas: 'VIIIa', gender: 'L'},
+                {username: 'ghifa_viiia', password: 'pass123', nama: 'GHIFA ADZKIYA ZULFI', kelas: 'VIIIa', gender: 'P'},
+                {username: 'mardani_viiia', password: 'pass123', nama: 'MARDANI SYAFIRA', kelas: 'VIIIa', gender: 'P'},
+                {username: 'denil_viiia', password: 'pass123', nama: 'MUHAMMAD DENIL', kelas: 'VIIIa', gender: 'L'},
+                {username: 'fajar_viiia', password: 'pass123', nama: 'MUHAMMAD FAJAR ALFARIZI', kelas: 'VIIIa', gender: 'L'},
+                {username: 'faris_viiia', password: 'pass123', nama: 'MUHAMMAD FARIS', kelas: 'VIIIa', gender: 'L'},
+                {username: 'ilham_viiia', password: 'pass123', nama: 'MUHAMMAD ILHAM', kelas: 'VIIIa', gender: 'L'},
+                {username: 'nizam_viiia', password: 'pass123', nama: 'MUHAMMAD NIZAM', kelas: 'VIIIa', gender: 'L'},
+                {username: 'rangga_viiia', password: 'pass123', nama: 'MUHAMMAD RANGGA', kelas: 'VIIIa', gender: 'L'},
+                {username: 'afni_viiia', password: 'pass123', nama: 'NUR AFNI ANNISA', kelas: 'VIIIa', gender: 'P'},
+                {username: 'putri_viiia', password: 'pass123', nama: 'PUTRI NURAMIRA', kelas: 'VIIIa', gender: 'P'},
+                {username: 'raffa_viiia', password: 'pass123', nama: 'RAFFA ALTRAMERO HANAFI', kelas: 'VIIIa', gender: 'L'},
+                {username: 'sayyid_viiia', password: 'pass123', nama: 'SAYYID MUHAMMAD FARHAN', kelas: 'VIIIa', gender: 'L'},
+                {username: 'syamira_viiia', password: 'pass123', nama: 'SYAMIRA MASLINDA', kelas: 'VIIIa', gender: 'P'},
+                {username: 'wafa_viiia', password: 'pass123', nama: 'WAFA NURUL HIDAYAH', kelas: 'VIIIa', gender: 'P'},
+                {username: 'zasi_viiia', password: 'pass123', nama: 'ZASI KIRANA', kelas: 'VIIIa', gender: 'P'},
+                // Kelas VIIIb
+                {username: 'wahid_viiib', password: 'pass123', nama: 'ABDUL WAHID AL RASYID', kelas: 'VIIIb', gender: 'L'},
+                {username: 'akbar_viiib', password: 'pass123', nama: 'AKBAR HIDAYATULHAQ', kelas: 'VIIIb', gender: 'L'},
+                {username: 'azkiyah_viiib', password: 'pass123', nama: 'AZKIYAH KHALIQAH', kelas: 'VIIIb', gender: 'P'},
+                {username: 'brilian_viiib', password: 'pass123', nama: 'BRILIAN SATRIA RAMADHAN', kelas: 'VIIIb', gender: 'L'},
+                {username: 'bunga_viiib', password: 'pass123', nama: 'BUNGA LESTARI RAHMADANI', kelas: 'VIIIb', gender: 'P'},
+                {username: 'dila_viiib', password: 'pass123', nama: 'DILA ANDA PUTRI', kelas: 'VIIIb', gender: 'P'},
+                {username: 'faizal_viiib', password: 'pass123', nama: 'FAIZAL', kelas: 'VIIIb', gender: 'L'},
+                {username: 'firman_viiib', password: 'pass123', nama: 'FIRMAN SYAH', kelas: 'VIIIb', gender: 'L'},
+                {username: 'habil_viiib', password: 'pass123', nama: 'HABIL ALMUHASIM', kelas: 'VIIIb', gender: 'L'},
+                {username: 'raeyhan_viiib', password: 'pass123', nama: 'MUHAMMAD RAEYHAN PRATAMA', kelas: 'VIIIb', gender: 'L'},
+                {username: 'rafiq_viiib', password: 'pass123', nama: 'MUHAMMAD RAFIQ', kelas: 'VIIIb', gender: 'L'},
+                {username: 'nada_viiib', password: 'pass123', nama: 'NADA SAKINA', kelas: 'VIIIb', gender: 'P'},
+                {username: 'putriana_viiib', password: 'pass123', nama: 'PUTRI NUR ARINA', kelas: 'VIIIb', gender: 'P'},
+                {username: 'reza_viiib', password: 'pass123', nama: 'REZA RAHARDIAN PUTRA', kelas: 'VIIIb', gender: 'L'},
+                {username: 'tasya_viiib', password: 'pass123', nama: 'TASYA RAMADANI', kelas: 'VIIIb', gender: 'P'},
+                {username: 'zulfadli_viiib', password: 'pass123', nama: 'ZULFADLI HAIKAL', kelas: 'VIIIb', gender: 'L'}
+            ],
+            teacher: {
+                username: 'guru1',
+                password: 'password123',
+                nama: 'Muhammad Nopran, S.Pd.',
+                role: 'Guru TIK'
+            },
+            materi: [
+                {
+                    id: 1,
+                    judul: 'Pengenalan Komputer',
+                    deskripsi: 'Memahami dasar-dasar komputer dan komponen utamanya',
+                    gambar: 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/kLlLKHY10m0',
+                    konten: `
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-l-4 border-blue-500">
+                                <h3 class="text-2xl font-bold mb-4 text-blue-800">🖥️ Apa itu Komputer?</h3>
+                                <p class="text-gray-700 leading-relaxed mb-4">
+                                    Komputer adalah perangkat elektronik yang dirancang untuk menerima data (input), 
+                                    memprosesnya sesuai instruksi yang diberikan, menyimpan hasilnya, dan mengeluarkan 
+                                    informasi (output). Kata "komputer" berasal dari bahasa Latin "computare" yang berarti menghitung.
+                                </p>
+                                <div class="bg-white p-4 rounded-lg shadow-sm">
+                                    <p class="font-semibold text-blue-700 mb-2">💡 Tahukah Kamu?</p>
+                                    <p class="text-sm text-gray-600">
+                                        Komputer pertama ENIAC (1946) seberat 30 ton dan membutuhkan ruangan seluas 167 m²! 
+                                        Sedangkan smartphone di saku kita sekarang jauh lebih powerful dari komputer NASA 
+                                        yang mengirim manusia ke bulan pada 1969.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                                <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                                    <span class="bg-blue-100 text-blue-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">1</span>
+                                    Cara Kerja Komputer
+                                </h3>
+                                <div class="grid md:grid-cols-4 gap-4">
+                                    <div class="text-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                                        <div class="text-4xl mb-3">⌨️</div>
+                                        <h4 class="font-bold text-blue-800 mb-2">INPUT</h4>
+                                        <p class="text-sm text-gray-600">Memasukkan data melalui keyboard, mouse, mic, dll</p>
+                                    </div>
+                                    <div class="text-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                                        <div class="text-4xl mb-3">⚙️</div>
+                                        <h4 class="font-bold text-green-800 mb-2">PROCESS</h4>
+                                        <p class="text-sm text-gray-600">CPU memproses data menjadi informasi</p>
+                                    </div>
+                                    <div class="text-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                                        <div class="text-4xl mb-3">💾</div>
+                                        <h4 class="font-bold text-purple-800 mb-2">STORAGE</h4>
+                                        <p class="text-sm text-gray-600">Menyimpan data di hard disk atau SSD</p>
+                                    </div>
+                                    <div class="text-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition">
+                                        <div class="text-4xl mb-3">🖥️</div>
+                                        <h4 class="font-bold text-orange-800 mb-2">OUTPUT</h4>
+                                        <p class="text-sm text-gray-600">Menampilkan hasil di monitor atau printer</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border-l-4 border-green-500">
+                                <h3 class="text-2xl font-bold mb-6 text-green-800 flex items-center">
+                                    <span class="bg-green-100 text-green-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">2</span>
+                                    Komponen Utama Komputer
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-start">
+                                            <span class="text-3xl mr-4">⌨️</span>
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-lg text-gray-800 mb-2">Input Device (Perangkat Input)</h4>
+                                                <p class="text-gray-600 mb-3">Perangkat untuk memasukkan data ke dalam komputer.</p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Keyboard</span>
+                                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Mouse</span>
+                                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Microphone</span>
+                                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Scanner</span>
+                                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Webcam</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-start">
+                                            <span class="text-3xl mr-4">🧠</span>
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-lg text-gray-800 mb-2">Processing (Pemrosesan)</h4>
+                                                <p class="text-gray-600 mb-3">Otak komputer yang memproses semua data dan instruksi.</p>
+                                                <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg">
+                                                    <p class="font-semibold text-purple-800">CPU (Central Processing Unit)</p>
+                                                    <p class="text-sm text-gray-600 mt-1">Contoh: Intel Core i5, AMD Ryzen 5</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-start">
+                                            <span class="text-3xl mr-4">💾</span>
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-lg text-gray-800 mb-2">Storage (Penyimpanan)</h4>
+                                                <p class="text-gray-600 mb-3">Media untuk menyimpan data permanen dan sementara.</p>
+                                                <div class="grid md:grid-cols-2 gap-3">
+                                                    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                                        <p class="font-semibold text-yellow-800">RAM (Memory Sementara)</p>
+                                                        <p class="text-xs text-gray-600 mt-1">Data hilang saat komputer mati</p>
+                                                    </div>
+                                                    <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                                        <p class="font-semibold text-blue-800">Hard Disk / SSD (Permanen)</p>
+                                                        <p class="text-xs text-gray-600 mt-1">Data tersimpan meski mati</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-start">
+                                            <span class="text-3xl mr-4">🖥️</span>
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-lg text-gray-800 mb-2">Output Device (Perangkat Output)</h4>
+                                                <p class="text-gray-600 mb-3">Perangkat untuk menampilkan atau mengeluarkan hasil.</p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Monitor</span>
+                                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Printer</span>
+                                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Speaker</span>
+                                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Headphone</span>
+                                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Proyektor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl border-l-4 border-yellow-500">
+                                <h3 class="text-2xl font-bold mb-4 text-yellow-800 flex items-center">
+                                    <span class="bg-yellow-100 text-yellow-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">3</span>
+                                    Jenis-Jenis Komputer
+                                </h3>
+                                
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                                        <div class="text-3xl mb-3">🖥️</div>
+                                        <h4 class="font-bold text-gray-800 mb-2">Desktop Computer</h4>
+                                        <p class="text-sm text-gray-600">Komputer meja yang powerful, cocok untuk kantor dan gaming.</p>
+                                    </div>
+                                    
+                                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                                        <div class="text-3xl mb-3">💻</div>
+                                        <h4 class="font-bold text-gray-800 mb-2">Laptop / Notebook</h4>
+                                        <p class="text-sm text-gray-600">Komputer portable yang bisa dibawa kemana-mana.</p>
+                                    </div>
+                                    
+                                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                                        <div class="text-3xl mb-3">📱</div>
+                                        <h4 class="font-bold text-gray-800 mb-2">Tablet</h4>
+                                        <p class="text-sm text-gray-600">Perangkat layar sentuh untuk browsing dan media.</p>
+                                    </div>
+                                    
+                                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                                        <div class="text-3xl mb-3">🖲️</div>
+                                        <h4 class="font-bold text-gray-800 mb-2">Smartphone</h4>
+                                        <p class="text-sm text-gray-600">Mini komputer di saku dengan berbagai fungsi.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-xl">
+                                <h3 class="text-xl font-bold mb-4 text-red-800">🎯 Rangkuman</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-2 mt-1">✓</span>
+                                        <span class="text-gray-700">Komputer adalah perangkat elektronik untuk memproses data</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-2 mt-1">✓</span>
+                                        <span class="text-gray-700">Komponen utama: Input, Process, Storage, Output</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-2 mt-1">✓</span>
+                                        <span class="text-gray-700">CPU adalah otak komputer yang memproses data</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-2 mt-1">✓</span>
+                                        <span class="text-gray-700">Ada berbagai jenis komputer: Desktop, Laptop, Tablet, Smartphone</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 2,
+                    judul: 'Perangkat Keras (Hardware)',
+                    deskripsi: 'Mengenal berbagai perangkat keras komputer',
+                    gambar: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/b2w1Ywt4p70',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Perangkat Keras Internal</h3>
+                        <ul class="list-disc ml-6 space-y-2 mb-6">
+                            <li><strong>CPU (Processor):</strong> Otak komputer yang memproses data</li>
+                            <li><strong>RAM:</strong> Memori sementara untuk menjalankan program</li>
+                            <li><strong>Motherboard:</strong> Papan induk yang menghubungkan semua komponen</li>
+                            <li><strong>Hard Disk/SSD:</strong> Media penyimpanan permanen</li>
+                            <li><strong>Power Supply:</strong> Sumber daya listrik</li>
+                        </ul>
+                        
+                        <h3 class="text-xl font-bold mb-4">Perangkat Keras Eksternal</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li><strong>Monitor:</strong> Layar tampilan</li>
+                            <li><strong>Keyboard & Mouse:</strong> Perangkat input</li>
+                            <li><strong>Printer:</strong> Mencetak dokumen</li>
+                            <li><strong>Speaker:</strong> Output suara</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 3,
+                    judul: 'Perangkat Lunak (Software)',
+                    deskripsi: 'Memahami jenis-jenis perangkat lunak komputer',
+                    gambar: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/fkGCLIQx1MI',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Jenis-jenis Software</h3>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-bold text-lg mb-2">1. Sistem Operasi (OS)</h4>
+                            <p class="mb-2">Software dasar yang mengelola hardware dan software lainnya.</p>
+                            <ul class="list-disc ml-6 space-y-1">
+                                <li>Windows (10, 11)</li>
+                                <li>MacOS</li>
+                                <li>Linux (Ubuntu, Mint)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-bold text-lg mb-2">2. Aplikasi</h4>
+                            <p class="mb-2">Program untuk tugas tertentu:</p>
+                            <ul class="list-disc ml-6 space-y-1">
+                                <li>Microsoft Office (Word, Excel, PowerPoint)</li>
+                                <li>Browser (Chrome, Firefox, Edge)</li>
+                                <li>Media Player (VLC, Windows Media Player)</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">3. Utility Software</h4>
+                            <p class="mb-2">Program pembantu:</p>
+                            <ul class="list-disc ml-6 space-y-1">
+                                <li>Antivirus</li>
+                                <li>Compression Tools (WinRAR, 7zip)</li>
+                                <li>Disk Cleaner</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    id: 4,
+                    judul: 'Navigasi Sistem Operasi Windows',
+                    deskripsi: 'Belajar menggunakan Windows dengan efektif',
+                    gambar: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/xgRZySKqdXI',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Elemen Dasar Windows</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold mb-2">Desktop</h4>
+                                <p>Area utama setelah login, tempat ikon dan wallpaper.</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Taskbar</h4>
+                                <p>Bar di bagian bawah yang menampilkan tombol Start, aplikasi yang sedang berjalan, dan system tray.</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Start Menu</h4>
+                                <p>Akses ke semua program dan pengaturan sistem.</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">File Explorer</h4>
+                                <p>Menjelajahi file dan folder di komputer (Win + E).</p>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4 mt-6">Shortcut Penting</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li><strong>Win + E:</strong> Buka File Explorer</li>
+                            <li><strong>Win + D:</strong> Tampilkan Desktop</li>
+                            <li><strong>Alt + Tab:</strong> Pindah antar aplikasi</li>
+                            <li><strong>Ctrl + C/V:</strong> Copy/Paste</li>
+                            <li><strong>Win + L:</strong> Lock komputer</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 5,
+                    judul: 'Manajemen File dan Folder',
+                    deskripsi: 'Mengelola file dan folder dengan terorganisir',
+                    gambar: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/k-EID5_2D9U',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Operasi Dasar File</h3>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <h4 class="font-bold mb-2">Membuat Folder Baru</h4>
+                                <p>Klik kanan → New → Folder atau tekan Ctrl + Shift + N</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Copy & Paste</h4>
+                                <p>Pilih file → Ctrl + C (copy) → Ctrl + V (paste)</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Cut & Paste (Memindahkan)</h4>
+                                <p>Pilih file → Ctrl + X (cut) → Ctrl + V (paste)</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Rename File</h4>
+                                <p>Klik file → F2 atau klik kanan → Rename</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Delete File</h4>
+                                <p>Pilih file → Delete (ke Recycle Bin) atau Shift + Delete (hapus permanen)</p>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4">Tips Organisasi</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>Buat struktur folder yang jelas (Dokumen, Tugas, Pribadi)</li>
+                            <li>Gunakan nama file yang deskriptif</li>
+                            <li>Backup file penting secara berkala</li>
+                            <li>Hapus file yang tidak diperlukan</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 6,
+                    judul: 'Mengetik 10 Jari',
+                    deskripsi: 'Teknik mengetik cepat dan efisien',
+                    gambar: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/t8QJuf-Sgg4',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Posisi Dasar Jari</h3>
+                        
+                        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                            <p class="font-bold mb-2">Baris Home Row (ASDF JKL;)</p>
+                            <ul class="space-y-1">
+                                <li>Jari Kelingking Kiri: A</li>
+                                <li>Jari Manis Kiri: S</li>
+                                <li>Jari Tengah Kiri: D</li>
+                                <li>Jari Telunjuk Kiri: F</li>
+                                <li>Jari Telunjuk Kanan: J</li>
+                                <li>Jari Tengah Kanan: K</li>
+                                <li>Jari Manis Kanan: L</li>
+                                <li>Jari Kelingking Kanan: ;</li>
+                            </ul>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4">Tips Mengetik Cepat</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>Jaga posisi jari di home row</li>
+                            <li>Lihat layar, bukan keyboard</li>
+                            <li>Latihan secara konsisten setiap hari</li>
+                            <li>Mulai dari lambat, fokus pada akurasi</li>
+                            <li>Gunakan semua jari, jangan hanya telunjuk</li>
+                        </ul>
+                        
+                        <h3 class="text-xl font-bold mb-4 mt-6">Website Latihan</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>TypingClub</li>
+                            <li>10FastFingers</li>
+                            <li>KeyBr.com</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 7,
+                    judul: 'Pengenalan Microsoft Word',
+                    deskripsi: 'Membuat dan mengedit dokumen dengan Word',
+                    gambar: 'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/e0BHg1xgX5M',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Fitur Dasar Word</h3>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <h4 class="font-bold mb-2">1. Formatting Text</h4>
+                                <ul class="list-disc ml-6 space-y-1">
+                                    <li>Bold (Ctrl + B), Italic (Ctrl + I), Underline (Ctrl + U)</li>
+                                    <li>Ubah font dan ukuran</li>
+                                    <li>Warna text dan highlight</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">2. Paragraph</h4>
+                                <ul class="list-disc ml-6 space-y-1">
+                                    <li>Alignment (kiri, tengah, kanan, justify)</li>
+                                    <li>Line spacing</li>
+                                    <li>Bullets dan numbering</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">3. Insert</h4>
+                                <ul class="list-disc ml-6 space-y-1">
+                                    <li>Gambar dan shapes</li>
+                                    <li>Tabel</li>
+                                    <li>Header & Footer</li>
+                                    <li>Page number</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4">Shortcut Penting</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li><strong>Ctrl + N:</strong> Dokumen baru</li>
+                            <li><strong>Ctrl + S:</strong> Save</li>
+                            <li><strong>Ctrl + P:</strong> Print</li>
+                            <li><strong>Ctrl + Z:</strong> Undo</li>
+                            <li><strong>Ctrl + Y:</strong> Redo</li>
+                            <li><strong>Ctrl + F:</strong> Find/Search</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 8,
+                    judul: 'Internet & Literasi Digital',
+                    deskripsi: 'Menggunakan internet dengan aman dan bijak',
+                    gambar: 'https://images.unsplash.com/photo-1484807352052-23338990c6c6?w=800&h=400&fit=crop',
+                    video: 'https://www.youtube.com/embed/Dxcc6ycZ73M',
+                    konten: `
+                        <h3 class="text-xl font-bold mb-4">Dasar Internet</h3>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <h4 class="font-bold mb-2">Browser</h4>
+                                <p>Program untuk mengakses internet (Chrome, Firefox, Edge)</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Search Engine</h4>
+                                <p>Mesin pencari seperti Google, Bing untuk mencari informasi</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">Email</h4>
+                                <p>Surat elektronik untuk komunikasi (Gmail, Yahoo, Outlook)</p>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4">Keamanan Internet</h3>
+                        <ul class="list-disc ml-6 space-y-2 mb-6">
+                            <li>Jangan membagikan password ke orang lain</li>
+                            <li>Hati-hati dengan link mencurigakan (phishing)</li>
+                            <li>Verifikasi informasi sebelum membagikan (hoax)</li>
+                            <li>Gunakan password yang kuat</li>
+                            <li>Jangan download dari situs tidak terpercaya</li>
+                        </ul>
+                        
+                        <h3 class="text-xl font-bold mb-4">Etika Digital</h3>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>Hormati privasi orang lain</li>
+                            <li>Tidak melakukan cyberbullying</li>
+                            <li>Cek fakta sebelum share berita</li>
+                            <li>Bijak menggunakan media sosial</li>
+                            <li>Hargai hak cipta dan karya orang lain</li>
+                        </ul>
+                    `
+                }
+            ],
+            quizBank: {
+                pretest: [
+                    {soal: 'Apa kepanjangan dari CPU?', pilihan: ['Central Processing Unit', 'Computer Personal Unit', 'Central Program Unit', 'Computer Processing Unit'], jawaban: 0},
+                    {soal: 'Perangkat berikut yang termasuk input device adalah...', pilihan: ['Monitor', 'Printer', 'Keyboard', 'Speaker'], jawaban: 2},
+                    {soal: 'RAM adalah singkatan dari...', pilihan: ['Random Access Memory', 'Read Access Memory', 'Rapid Access Memory', 'Real Access Memory'], jawaban: 0},
+                    {soal: 'Sistem operasi yang dikembangkan oleh Microsoft adalah...', pilihan: ['Linux', 'MacOS', 'Windows', 'Unix'], jawaban: 2},
+                    {soal: 'Perangkat penyimpanan permanen pada komputer adalah...', pilihan: ['RAM', 'ROM', 'Hard Disk', 'Cache'], jawaban: 2},
+                    {soal: 'Browser yang dikembangkan oleh Google adalah...', pilihan: ['Firefox', 'Chrome', 'Safari', 'Opera'], jawaban: 1},
+                    {soal: 'Shortcut untuk membuka File Explorer adalah...', pilihan: ['Win + D', 'Win + E', 'Win + R', 'Win + L'], jawaban: 1},
+                    {soal: 'Ekstensi file dokumen Microsoft Word adalah...', pilihan: ['.txt', '.pdf', '.docx', '.xlsx'], jawaban: 2},
+                    {soal: 'Fungsi utama dari motherboard adalah...', pilihan: ['Memproses data', 'Menghubungkan semua komponen', 'Menyimpan data', 'Menampilkan gambar'], jawaban: 1},
+                    {soal: 'Output device yang digunakan untuk mencetak dokumen adalah...', pilihan: ['Scanner', 'Monitor', 'Printer', 'Keyboard'], jawaban: 2},
+                    {soal: 'Shortcut untuk copy adalah...', pilihan: ['Ctrl + C', 'Ctrl + X', 'Ctrl + V', 'Ctrl + Z'], jawaban: 0},
+                    {soal: 'Software antivirus termasuk dalam kategori...', pilihan: ['Sistem Operasi', 'Aplikasi', 'Utility', 'Hardware'], jawaban: 2},
+                    {soal: 'Kapasitas penyimpanan 1 GB sama dengan...', pilihan: ['1000 KB', '1000 MB', '1024 MB', '1024 KB'], jawaban: 2},
+                    {soal: 'Search engine populer yang paling banyak digunakan adalah...', pilihan: ['Bing', 'Yahoo', 'Google', 'DuckDuckGo'], jawaban: 2},
+                    {soal: 'Tombol untuk menghapus karakter di sebelah kanan kursor adalah...', pilihan: ['Backspace', 'Delete', 'Enter', 'Tab'], jawaban: 1},
+                    {soal: 'Format file gambar adalah...', pilihan: ['.mp3', '.jpg', '.docx', '.exe'], jawaban: 1},
+                    {soal: 'Perangkat input yang digunakan untuk menunjuk dan mengklik adalah...', pilihan: ['Keyboard', 'Monitor', 'Mouse', 'Printer'], jawaban: 2},
+                    {soal: 'Shortcut untuk paste adalah...', pilihan: ['Ctrl + C', 'Ctrl + X', 'Ctrl + V', 'Ctrl + A'], jawaban: 2},
+                    {soal: 'Aplikasi Microsoft Office untuk membuat presentasi adalah...', pilihan: ['Word', 'Excel', 'PowerPoint', 'Access'], jawaban: 2},
+                    {soal: 'WWW adalah singkatan dari...', pilihan: ['World Wide Web', 'World Web Wide', 'Wide World Web', 'Web World Wide'], jawaban: 0},
+                    {soal: 'Perangkat yang berfungsi sebagai otak komputer adalah...', pilihan: ['RAM', 'Hard Disk', 'CPU', 'Monitor'], jawaban: 2},
+                    {soal: 'Ekstensi file untuk video adalah...', pilihan: ['.jpg', '.mp3', '.mp4', '.txt'], jawaban: 2},
+                    {soal: 'Shortcut untuk membuka jendela Run adalah...', pilihan: ['Win + R', 'Win + E', 'Win + D', 'Win + L'], jawaban: 0},
+                    {soal: 'Software yang digunakan untuk membuat animasi dan desain grafis adalah...', pilihan: ['Microsoft Word', 'Adobe Photoshop', 'Notepad', 'Calculator'], jawaban: 1},
+                    {soal: 'Fungsi utama dari Power Supply adalah...', pilihan: ['Memproses data', 'Menyimpan data', 'Menyuplai listrik', 'Menampilkan gambar'], jawaban: 2},
+                    {soal: 'Email adalah singkatan dari...', pilihan: ['Electronic Mail', 'Electric Mail', 'Electronic Message', 'Electric Message'], jawaban: 0},
+                    {soal: 'Shortcut untuk save file adalah...', pilihan: ['Ctrl + S', 'Ctrl + O', 'Ctrl + N', 'Ctrl + P'], jawaban: 0},
+                    {soal: 'Perangkat yang menghubungkan komputer ke internet adalah...', pilihan: ['RAM', 'Modem', 'Hard Disk', 'Monitor'], jawaban: 1},
+                    {soal: 'Tombol untuk mengunci komputer adalah...', pilihan: ['Win + L', 'Win + E', 'Win + R', 'Win + D'], jawaban: 0},
+                    {soal: 'Software untuk mengompress file adalah...', pilihan: ['WinRAR', 'Microsoft Word', 'Paint', 'Calculator'], jawaban: 0},
+                    {soal: 'Apa yang dimaksud dengan phishing?', pilihan: ['Virus komputer', 'Penipuan online', 'Software antivirus', 'Game online'], jawaban: 1},
+                    {soal: 'Resolusi layar yang lebih tinggi menunjukkan...', pilihan: ['Layar lebih kecil', 'Gambar lebih tajam', 'Layar lebih gelap', 'Komputer lebih cepat'], jawaban: 1},
+                    {soal: 'Shortcut untuk undo adalah...', pilihan: ['Ctrl + Z', 'Ctrl + Y', 'Ctrl + X', 'Ctrl + C'], jawaban: 0},
+                    {soal: 'Cloud storage adalah...', pilihan: ['Penyimpanan lokal', 'Penyimpanan online', 'Penyimpanan eksternal', 'Penyimpanan internal'], jawaban: 1},
+                    {soal: 'Format file audio adalah...', pilihan: ['.mp4', '.jpg', '.mp3', '.docx'], jawaban: 2},
+                    {soal: 'Perangkat output yang menghasilkan suara adalah...', pilihan: ['Monitor', 'Speaker', 'Keyboard', 'Mouse'], jawaban: 1},
+                    {soal: 'Shortcut untuk select all adalah...', pilihan: ['Ctrl + A', 'Ctrl + S', 'Ctrl + C', 'Ctrl + V'], jawaban: 0},
+                    {soal: 'Bandwidth internet diukur dalam satuan...', pilihan: ['MB', 'Mbps', 'GB', 'GHz'], jawaban: 1},
+                    {soal: 'Firewall berfungsi untuk...', pilihan: ['Mempercepat internet', 'Melindungi dari ancaman', 'Menyimpan data', 'Memproses data'], jawaban: 1},
+                    {soal: 'Perangkat untuk membaca data dari CD/DVD adalah...', pilihan: ['Hard Disk', 'USB', 'Optical Drive', 'SSD'], jawaban: 2},
+                    {soal: 'Shortcut untuk membuka Task Manager adalah...', pilihan: ['Ctrl + Shift + Esc', 'Ctrl + Alt + Delete', 'Win + Tab', 'Alt + F4'], jawaban: 0},
+                    {soal: 'BIOS adalah singkatan dari...', pilihan: ['Basic Input Output System', 'Basic Internal Output System', 'Binary Input Output System', 'Basic Input Online System'], jawaban: 0},
+                    {soal: 'Cookies pada browser berfungsi untuk...', pilihan: ['Menyimpan virus', 'Menyimpan data browsing', 'Menghapus data', 'Memperlambat internet'], jawaban: 1},
+                    {soal: 'USB adalah singkatan dari...', pilihan: ['Universal Serial Bus', 'Universal System Bus', 'United Serial Bus', 'United System Bus'], jawaban: 0},
+                    {soal: 'Malware adalah...', pilihan: ['Software baik', 'Software berbahaya', 'Software gratis', 'Software berbayar'], jawaban: 1},
+                    {soal: 'Dual monitor berarti...', pilihan: ['Satu monitor', 'Dua monitor', 'Tiga monitor', 'Empat monitor'], jawaban: 1},
+                    {soal: 'Download berarti...', pilihan: ['Mengirim data', 'Mengunduh data', 'Menghapus data', 'Menyimpan data'], jawaban: 1},
+                    {soal: 'Upload berarti...', pilihan: ['Mengunduh data', 'Mengirim data', 'Menghapus data', 'Menyimpan data'], jawaban: 1},
+                    {soal: 'Plugin pada browser adalah...', pilihan: ['Virus', 'Tambahan fitur', 'Penyimpanan', 'Hardware'], jawaban: 1},
+                    {soal: 'Defragment digunakan untuk...', pilihan: ['Mengoptimalkan hard disk', 'Menghapus virus', 'Mempercepat RAM', 'Menyimpan data'], jawaban: 0}
+                ],
+                bab1: [
+                    {soal: 'Komputer adalah perangkat elektronik yang dapat...', pilihan: ['Hanya menghitung', 'Memproses, menyimpan, dan mengeluarkan data', 'Hanya menyimpan data', 'Hanya menampilkan gambar'], jawaban: 1},
+                    {soal: 'Komponen yang berfungsi memasukkan data adalah...', pilihan: ['Output Device', 'Input Device', 'Storage Device', 'Processing Device'], jawaban: 1},
+                    {soal: 'Contoh input device adalah...', pilihan: ['Monitor', 'Printer', 'Mouse', 'Speaker'], jawaban: 2},
+                    {soal: 'CPU memiliki fungsi utama untuk...', pilihan: ['Menyimpan data', 'Memproses data', 'Menampilkan data', 'Mengirim data'], jawaban: 1},
+                    {soal: 'Perangkat yang menyimpan data permanen adalah...', pilihan: ['RAM', 'CPU', 'Hard Disk', 'Cache'], jawaban: 2},
+                    {soal: 'Monitor termasuk dalam kategori...', pilihan: ['Input Device', 'Output Device', 'Storage Device', 'Processing Device'], jawaban: 1},
+                    {soal: 'Yang bukan termasuk komponen utama komputer adalah...', pilihan: ['Input', 'Processing', 'Output', 'Decoration'], jawaban: 3},
+                    {soal: 'Keyboard dan mouse termasuk...', pilihan: ['Output device', 'Input device', 'Storage device', 'Processing device'], jawaban: 1},
+                    {soal: 'Printer menghasilkan output berupa...', pilihan: ['Suara', 'Gambar di layar', 'Dokumen tercetak', 'Data digital'], jawaban: 2},
+                    {soal: 'Komputer bekerja berdasarkan...', pilihan: ['Keinginan sendiri', 'Instruksi program', 'Energi matahari', 'Gerakan manual'], jawaban: 1}
+                ],
+                bab2: [
+                    {soal: 'Hardware adalah...', pilihan: ['Perangkat lunak', 'Perangkat keras', 'Data', 'Informasi'], jawaban: 1},
+                    {soal: 'CPU adalah singkatan dari...', pilihan: ['Central Processing Unit', 'Computer Personal Unit', 'Central Program Unit', 'Central Power Unit'], jawaban: 0},
+                    {soal: 'Fungsi RAM adalah...', pilihan: ['Penyimpanan permanen', 'Memori sementara', 'Memproses data', 'Menampilkan gambar'], jawaban: 1},
+                    {soal: 'Motherboard berfungsi untuk...', pilihan: ['Menyimpan data', 'Menghubungkan komponen', 'Memproses data', 'Menampilkan video'], jawaban: 1},
+                    {soal: 'Power Supply menyuplai...', pilihan: ['Data', 'Listrik', 'Informasi', 'Program'], jawaban: 1},
+                    {soal: 'SSD adalah...', pilihan: ['Monitor', 'Penyimpanan data', 'Processor', 'RAM'], jawaban: 1},
+                    {soal: 'VGA Card berfungsi untuk...', pilihan: ['Memproses suara', 'Memproses grafis', 'Menyimpan data', 'Mendinginkan sistem'], jawaban: 1},
+                    {soal: 'Cooling fan berfungsi untuk...', pilihan: ['Mempercepat proses', 'Mendinginkan komponen', 'Menyimpan data', 'Menampilkan gambar'], jawaban: 1},
+                    {soal: 'Hard Disk menggunakan piringan...', pilihan: ['Plastik', 'Magnetik', 'Kertas', 'Karet'], jawaban: 1},
+                    {soal: 'Yang bukan hardware internal adalah...', pilihan: ['RAM', 'CPU', 'Monitor', 'Motherboard'], jawaban: 2}
+                ],
+                bab3: [
+                    {soal: 'Software adalah...', pilihan: ['Perangkat keras', 'Perangkat lunak', 'Data', 'Hardware'], jawaban: 1},
+                    {soal: 'Sistem operasi adalah...', pilihan: ['Hardware', 'Software dasar', 'Data', 'Internet'], jawaban: 1},
+                    {soal: 'Contoh sistem operasi adalah...', pilihan: ['Microsoft Word', 'Windows', 'Google Chrome', 'Adobe Photoshop'], jawaban: 1},
+                    {soal: 'Microsoft Office termasuk...', pilihan: ['Sistem Operasi', 'Aplikasi', 'Hardware', 'Driver'], jawaban: 1},
+                    {soal: 'Browser digunakan untuk...', pilihan: ['Mengetik dokumen', 'Mengakses internet', 'Mengedit foto', 'Menghitung'], jawaban: 1},
+                    {soal: 'Antivirus termasuk kategori...', pilihan: ['Sistem Operasi', 'Aplikasi', 'Utility Software', 'Hardware'], jawaban: 2},
+                    {soal: 'Yang bukan sistem operasi adalah...', pilihan: ['Windows', 'Linux', 'MacOS', 'Microsoft Word'], jawaban: 3},
+                    {soal: 'WinRAR digunakan untuk...', pilihan: ['Browsing', 'Kompresi file', 'Editing video', 'Gaming'], jawaban: 1},
+                    {soal: 'Media player digunakan untuk...', pilihan: ['Mengetik', 'Memutar multimedia', 'Browsing', 'Menghitung'], jawaban: 1},
+                    {soal: 'Driver adalah software yang...', pilihan: ['Menghubungkan hardware dengan OS', 'Membuat dokumen', 'Browsing internet', 'Gaming'], jawaban: 0}
+                ],
+                bab4: [
+                    {soal: 'Shortcut Win + E digunakan untuk...', pilihan: ['Buka Desktop', 'Buka File Explorer', 'Buka Browser', 'Lock Screen'], jawaban: 1},
+                    {soal: 'Taskbar terletak di...', pilihan: ['Atas layar', 'Bawah layar', 'Kiri layar', 'Tengah layar'], jawaban: 1},
+                    {soal: 'Start Menu dibuka dengan tombol...', pilihan: ['Alt', 'Ctrl', 'Win', 'Shift'], jawaban: 2},
+                    {soal: 'Alt + Tab digunakan untuk...', pilihan: ['Menutup program', 'Pindah antar aplikasi', 'Buka File Explorer', 'Screenshot'], jawaban: 1},
+                    {soal: 'Win + D menampilkan...', pilihan: ['Start Menu', 'Desktop', 'Task Manager', 'Settings'], jawaban: 1},
+                    {soal: 'Win + L digunakan untuk...', pilihan: ['Login', 'Lock komputer', 'Logout', 'Shutdown'], jawaban: 1},
+                    {soal: 'Control Panel digunakan untuk...', pilihan: ['Gaming', 'Pengaturan sistem', 'Browsing', 'Editing'], jawaban: 1},
+                    {soal: 'System tray terletak di...', pilihan: ['Kiri bawah', 'Kanan bawah', 'Tengah atas', 'Kiri atas'], jawaban: 1},
+                    {soal: 'Recycle Bin berfungsi untuk...', pilihan: ['Menyimpan file penting', 'Tempat file terhapus', 'Backup data', 'Compress file'], jawaban: 1},
+                    {soal: 'Shortcut Ctrl + Shift + Esc membuka...', pilihan: ['File Explorer', 'Task Manager', 'Control Panel', 'Settings'], jawaban: 1}
+                ],
+                bab5: [
+                    {soal: 'Ctrl + C digunakan untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Delete'], jawaban: 1},
+                    {soal: 'Ctrl + V digunakan untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Select All'], jawaban: 2},
+                    {soal: 'Ctrl + X digunakan untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Undo'], jawaban: 0},
+                    {soal: 'F2 digunakan untuk...', pilihan: ['Delete', 'Rename', 'Copy', 'Paste'], jawaban: 1},
+                    {soal: 'Delete mengirim file ke...', pilihan: ['Hapus permanen', 'Recycle Bin', 'Desktop', 'Documents'], jawaban: 1},
+                    {soal: 'Shift + Delete akan...', pilihan: ['Copy file', 'Hapus permanen', 'Ke Recycle Bin', 'Rename'], jawaban: 1},
+                    {soal: 'Cara membuat folder baru adalah...', pilihan: ['Ctrl + N', 'Ctrl + Shift + N', 'Ctrl + F', 'Ctrl + D'], jawaban: 1},
+                    {soal: 'Ekstensi file gambar adalah...', pilihan: ['.txt', '.jpg', '.exe', '.doc'], jawaban: 1},
+                    {soal: 'Ekstensi file dokumen Word adalah...', pilihan: ['.txt', '.pdf', '.docx', '.jpg'], jawaban: 2},
+                    {soal: 'Backup file sebaiknya dilakukan...', pilihan: ['Tidak perlu', 'Setiap hari', 'Berkala', 'Hanya sekali'], jawaban: 2}
+                ],
+                bab6: [
+                    {soal: 'Home row pada keyboard adalah...', pilihan: ['QWER', 'ASDF JKL;', 'ZXCV', '1234'], jawaban: 1},
+                    {soal: 'Jari telunjuk kiri posisi di tombol...', pilihan: ['A', 'S', 'D', 'F'], jawaban: 3},
+                    {soal: 'Jari telunjuk kanan posisi di tombol...', pilihan: ['J', 'K', 'L', 'H'], jawaban: 0},
+                    {soal: 'Saat mengetik, pandangan sebaiknya...', pilihan: ['Ke keyboard', 'Ke layar', 'Ke meja', 'Ke samping'], jawaban: 1},
+                    {soal: 'Untuk mengetik cepat, gunakan...', pilihan: ['Hanya telunjuk', 'Semua jari', 'Hanya jempol', 'Hanya kelingking'], jawaban: 1},
+                    {soal: 'Latihan mengetik sebaiknya...', pilihan: ['Sekali saja', 'Setiap hari', 'Seminggu sekali', 'Tidak perlu'], jawaban: 1},
+                    {soal: 'Fokus awal latihan mengetik adalah...', pilihan: ['Kecepatan', 'Akurasi', 'Gaya', 'Suara'], jawaban: 1},
+                    {soal: 'Posisi tangan saat mengetik sebaiknya...', pilihan: ['Tegang', 'Rileks', 'Kaku', 'Bergetar'], jawaban: 1},
+                    {soal: 'Tombol spasi ditekan dengan...', pilihan: ['Jari telunjuk', 'Jari tengah', 'Jempol', 'Kelingking'], jawaban: 2},
+                    {soal: 'Website untuk latihan mengetik adalah...', pilihan: ['Facebook', 'TypingClub', 'Instagram', 'YouTube'], jawaban: 1}
+                ],
+                bab7: [
+                    {soal: 'Ekstensi file Microsoft Word adalah...', pilihan: ['.txt', '.docx', '.pdf', '.xlsx'], jawaban: 1},
+                    {soal: 'Ctrl + B digunakan untuk...', pilihan: ['Italic', 'Bold', 'Underline', 'Center'], jawaban: 1},
+                    {soal: 'Ctrl + I digunakan untuk...', pilihan: ['Bold', 'Italic', 'Underline', 'Save'], jawaban: 1},
+                    {soal: 'Ctrl + U digunakan untuk...', pilihan: ['Bold', 'Italic', 'Underline', 'Cut'], jawaban: 2},
+                    {soal: 'Ctrl + S digunakan untuk...', pilihan: ['Select All', 'Save', 'Search', 'Style'], jawaban: 1},
+                    {soal: 'Ctrl + P digunakan untuk...', pilihan: ['Paste', 'Print', 'Preview', 'Page'], jawaban: 1},
+                    {soal: 'Untuk meratakan teks ke tengah gunakan...', pilihan: ['Left align', 'Center align', 'Right align', 'Justify'], jawaban: 1},
+                    {soal: 'Header terletak di bagian...', pilihan: ['Bawah', 'Atas', 'Tengah', 'Samping'], jawaban: 1},
+                    {soal: 'Footer terletak di bagian...', pilihan: ['Atas', 'Bawah', 'Tengah', 'Samping'], jawaban: 1},
+                    {soal: 'Page number digunakan untuk...', pilihan: ['Menghitung kata', 'Memberi nomor halaman', 'Mengatur margin', 'Menambah gambar'], jawaban: 1}
+                ],
+                bab8: [
+                    {soal: 'WWW adalah singkatan dari...', pilihan: ['World Wide Web', 'World Web Wide', 'Wide World Web', 'Web World Wide'], jawaban: 0},
+                    {soal: 'Browser digunakan untuk...', pilihan: ['Mengetik', 'Mengakses internet', 'Menghitung', 'Menggambar'], jawaban: 1},
+                    {soal: 'Contoh browser adalah...', pilihan: ['Microsoft Word', 'Google Chrome', 'Windows', 'Photoshop'], jawaban: 1},
+                    {soal: 'Search engine populer adalah...', pilihan: ['Facebook', 'Google', 'Instagram', 'WhatsApp'], jawaban: 1},
+                    {soal: 'Email adalah singkatan dari...', pilihan: ['Electronic Mail', 'Electric Mail', 'Electronic Message', 'Electric Message'], jawaban: 0},
+                    {soal: 'Phishing adalah...', pilihan: ['Software bagus', 'Penipuan online', 'Game online', 'Antivirus'], jawaban: 1},
+                    {soal: 'Cyberbullying adalah...', pilihan: ['Game online', 'Perundungan di internet', 'Belajar online', 'Belanja online'], jawaban: 1},
+                    {soal: 'Hoax adalah...', pilihan: ['Berita benar', 'Berita palsu', 'Aplikasi', 'Browser'], jawaban: 1},
+                    {soal: 'Password sebaiknya...', pilihan: ['Dibagikan ke teman', 'Dirahasiakan', 'Ditulis di kertas', 'Sama dengan username'], jawaban: 1},
+                    {soal: 'Etika digital adalah...', pilihan: ['Tidak penting', 'Aturan berperilaku di internet', 'Nama aplikasi', 'Jenis hardware'], jawaban: 1}
+                ],
+                posttest: [
+                    {soal: 'CPU adalah singkatan dari...', pilihan: ['Central Processing Unit', 'Computer Personal Unit', 'Central Program Unit', 'Computer Processing Unit'], jawaban: 0},
+                    {soal: 'Fungsi utama RAM adalah...', pilihan: ['Penyimpanan permanen', 'Memori sementara', 'Memproses grafis', 'Mendinginkan sistem'], jawaban: 1},
+                    {soal: 'Sistem operasi yang dikembangkan Microsoft adalah...', pilihan: ['Linux', 'Windows', 'MacOS', 'Unix'], jawaban: 1},
+                    {soal: 'Keyboard termasuk...', pilihan: ['Output device', 'Input device', 'Storage device', 'Processing device'], jawaban: 1},
+                    {soal: 'Monitor termasuk...', pilihan: ['Input device', 'Output device', 'Storage device', 'Processing device'], jawaban: 1},
+                    {soal: 'Hard Disk berfungsi untuk...', pilihan: ['Memproses data', 'Penyimpanan permanen', 'Memori sementara', 'Menampilkan gambar'], jawaban: 1},
+                    {soal: 'Shortcut Ctrl + C untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Delete'], jawaban: 1},
+                    {soal: 'Shortcut Ctrl + V untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Select'], jawaban: 2},
+                    {soal: 'Shortcut Win + E untuk...', pilihan: ['Desktop', 'File Explorer', 'Browser', 'Settings'], jawaban: 1},
+                    {soal: 'F2 digunakan untuk...', pilihan: ['Delete', 'Rename', 'Copy', 'Paste'], jawaban: 1},
+                    {soal: 'Home row keyboard adalah...', pilihan: ['QWER', 'ASDF JKL;', 'ZXCV', '1234'], jawaban: 1},
+                    {soal: 'Jari telunjuk kiri di tombol...', pilihan: ['A', 'S', 'D', 'F'], jawaban: 3},
+                    {soal: 'Ctrl + B di Word untuk...', pilihan: ['Italic', 'Bold', 'Underline', 'Save'], jawaban: 1},
+                    {soal: 'Ctrl + S untuk...', pilihan: ['Search', 'Save', 'Select', 'Style'], jawaban: 1},
+                    {soal: 'WWW adalah singkatan dari...', pilihan: ['World Wide Web', 'World Web Wide', 'Wide World Web', 'Web World Wide'], jawaban: 0},
+                    {soal: 'Browser untuk akses internet adalah...', pilihan: ['Word', 'Chrome', 'Excel', 'Paint'], jawaban: 1},
+                    {soal: 'Email adalah singkatan dari...', pilihan: ['Electronic Mail', 'Electric Mail', 'Electronic Message', 'Electric Message'], jawaban: 0},
+                    {soal: 'Phishing adalah...', pilihan: ['Software', 'Penipuan online', 'Game', 'Browser'], jawaban: 1},
+                    {soal: 'Motherboard berfungsi...', pilihan: ['Menyimpan data', 'Menghubungkan komponen', 'Memproses data', 'Menampilkan video'], jawaban: 1},
+                    {soal: 'VGA Card untuk...', pilihan: ['Suara', 'Grafis', 'Penyimpanan', 'Pendingin'], jawaban: 1},
+                    {soal: 'Microsoft Office termasuk...', pilihan: ['OS', 'Aplikasi', 'Hardware', 'Driver'], jawaban: 1},
+                    {soal: 'Antivirus termasuk...', pilihan: ['OS', 'Aplikasi', 'Utility', 'Hardware'], jawaban: 2},
+                    {soal: 'Alt + Tab untuk...', pilihan: ['Menutup', 'Pindah aplikasi', 'Buka File', 'Screenshot'], jawaban: 1},
+                    {soal: 'Win + L untuk...', pilihan: ['Login', 'Lock', 'Logout', 'Shutdown'], jawaban: 1},
+                    {soal: 'Ctrl + X untuk...', pilihan: ['Cut', 'Copy', 'Paste', 'Undo'], jawaban: 0},
+                    {soal: 'Delete mengirim ke...', pilihan: ['Hapus permanen', 'Recycle Bin', 'Desktop', 'Documents'], jawaban: 1},
+                    {soal: 'Shift + Delete akan...', pilihan: ['Copy', 'Hapus permanen', 'Recycle Bin', 'Rename'], jawaban: 1},
+                    {soal: 'Ekstensi file Word adalah...', pilihan: ['.txt', '.docx', '.pdf', '.xlsx'], jawaban: 1},
+                    {soal: 'Jari telunjuk kanan di tombol...', pilihan: ['J', 'K', 'L', 'H'], jawaban: 0},
+                    {soal: 'Fokus mengetik awal adalah...', pilihan: ['Kecepatan', 'Akurasi', 'Gaya', 'Suara'], jawaban: 1},
+                    {soal: 'Ctrl + I di Word untuk...', pilihan: ['Bold', 'Italic', 'Underline', 'Save'], jawaban: 1},
+                    {soal: 'Ctrl + P untuk...', pilihan: ['Paste', 'Print', 'Preview', 'Page'], jawaban: 1},
+                    {soal: 'Header di bagian...', pilihan: ['Bawah', 'Atas', 'Tengah', 'Samping'], jawaban: 1},
+                    {soal: 'Search engine populer...', pilihan: ['Facebook', 'Google', 'Instagram', 'WhatsApp'], jawaban: 1},
+                    {soal: 'Hoax adalah...', pilihan: ['Berita benar', 'Berita palsu', 'Aplikasi', 'Browser'], jawaban: 1},
+                    {soal: 'Password sebaiknya...', pilihan: ['Dibagikan', 'Dirahasiakan', 'Ditulis kertas', 'Sama username'], jawaban: 1},
+                    {soal: 'Power Supply untuk...', pilihan: ['Data', 'Listrik', 'Informasi', 'Program'], jawaban: 1},
+                    {soal: 'SSD adalah...', pilihan: ['Monitor', 'Penyimpanan', 'Processor', 'RAM'], jawaban: 1},
+                    {soal: 'WinRAR untuk...', pilihan: ['Browsing', 'Kompresi file', 'Video', 'Gaming'], jawaban: 1},
+                    {soal: 'Ctrl + Shift + N untuk...', pilihan: ['File baru', 'Folder baru', 'Window baru', 'Tab baru'], jawaban: 1},
+                    {soal: 'Recycle Bin untuk...', pilihan: ['File penting', 'File terhapus', 'Backup', 'Compress'], jawaban: 1},
+                    {soal: 'Ekstensi file gambar...', pilihan: ['.txt', '.jpg', '.exe', '.doc'], jawaban: 1},
+                    {soal: 'Tombol spasi dengan...', pilihan: ['Telunjuk', 'Tengah', 'Jempol', 'Kelingking'], jawaban: 2},
+                    {soal: 'Ctrl + U di Word untuk...', pilihan: ['Bold', 'Italic', 'Underline', 'Cut'], jawaban: 2},
+                    {soal: 'Center align untuk...', pilihan: ['Kiri', 'Tengah', 'Kanan', 'Rata'], jawaban: 1},
+                    {soal: 'Footer di bagian...', pilihan: ['Atas', 'Bawah', 'Tengah', 'Samping'], jawaban: 1},
+                    {soal: 'Cyberbullying adalah...', pilihan: ['Game', 'Perundungan online', 'Belajar', 'Belanja'], jawaban: 1},
+                    {soal: 'Etika digital adalah...', pilihan: ['Tidak penting', 'Aturan di internet', 'Aplikasi', 'Hardware'], jawaban: 1},
+                    {soal: '1 GB sama dengan...', pilihan: ['1000 KB', '1000 MB', '1024 MB', '1024 KB'], jawaban: 2},
+                    {soal: 'Printer termasuk...', pilihan: ['Input', 'Output', 'Storage', 'Processing'], jawaban: 1}
+                ]
+            }
+        };
+
+        // Generate dummy scores with significant improvement
+        function generateScores() {
+            const scores = {};
+            SYSTEM_DATA.students.forEach(student => {
+                const pretest = Math.floor(Math.random() * 30) + 40; // 40-70
+                const improvement = Math.floor(Math.random() * 20) + 15; // +15 to +35
+                const posttest = Math.min(100, pretest + improvement);
+                
+                const quizScores = [];
+                for(let i = 1; i <= 8; i++) {
+                    quizScores.push(Math.floor(Math.random() * 25) + 70); // 70-95
+                }
+                
+                const avgQuiz = quizScores.reduce((a,b) => a+b, 0) / 8;
+                const finalScore = Math.round((pretest + avgQuiz + posttest) / 3);
+                
+                scores[student.username] = {
+                    pretest,
+                    quizzes: quizScores,
+                    posttest,
+                    finalScore,
+                    status: finalScore >= 70 ? 'Lulus' : 'Tidak Lulus',
+                    completedBabs: [1,2,3,4,5,6,7,8],
+                    xp: 100 + (8 * 50) + 200, // pretest + kuis + posttest
+                    certificates: finalScore >= 70 ? ['Sertifikat Kelulusan TIK'] : []
+                };
+            });
+            return scores;
+        }
+
+        // Generate attendance (95% hadir)
+        function generateAttendance() {
+            const attendance = {};
+            const pertemuan = 12;
+            SYSTEM_DATA.students.forEach(student => {
+                const kehadiran = [];
+                for(let i = 1; i <= pertemuan; i++) {
+                    // 95% hadir
+                    kehadiran.push(Math.random() < 0.95 ? 'Hadir' : (Math.random() < 0.5 ? 'Izin' : 'Sakit'));
+                }
+                const hadir = kehadiran.filter(k => k === 'Hadir').length;
+                const persentase = Math.round((hadir / pertemuan) * 100);
+                attendance[student.username] = {
+                    records: kehadiran,
+                    hadir,
+                    izin: kehadiran.filter(k => k === 'Izin').length,
+                    sakit: kehadiran.filter(k => k === 'Sakit').length,
+                    alpha: kehadiran.filter(k => k === 'Alpha').length,
+                    persentase
+                };
+            });
+            return attendance;
+        }
+
+        // Generate feedback
+        function generateFeedbacks() {
+            const feedbacks = [];
+            const comments = [
+                'Materinya sangat mudah dipahami dan menarik!',
+                'Video pembelajarannya bagus, saya jadi lebih paham',
+                'Kuis-kuisnya membantu saya mengingat materi',
+                'Sistem badge dan XP membuat belajar lebih seru',
+                'Terima kasih atas pembelajaran yang menyenangkan',
+                'Materi TIK jadi lebih mudah dengan e-learning ini',
+                'Sangat membantu untuk belajar komputer dari dasar'
+            ];
+            
+            const babFavorit = ['Bab 1', 'Bab 2', 'Bab 3', 'Bab 4', 'Bab 5', 'Bab 6', 'Bab 7', 'Bab 8'];
+            const babSulit = ['Bab 6', 'Bab 7', 'Bab 8', 'Bab 5', 'Bab 4'];
+            
+            // Random 25-28 siswa memberikan feedback (sekitar 87%)
+            const feedbackCount = Math.floor(Math.random() * 4) + 25;
+            const shuffled = [...SYSTEM_DATA.students].sort(() => 0.5 - Math.random());
+            
+            for(let i = 0; i < feedbackCount; i++) {
+                const student = shuffled[i];
+                feedbacks.push({
+                    nama: student.nama,
+                    kelas: student.kelas,
+                    rating: Math.floor(Math.random() * 2) + 4, // 4-5 stars
+                    babFavorit: babFavorit[Math.floor(Math.random() * babFavorit.length)],
+                    babSulit: babSulit[Math.floor(Math.random() * babSulit.length)],
+                    komentar: comments[Math.floor(Math.random() * comments.length)],
+                    tanggal: new Date(2025, 9, Math.floor(Math.random() * 29) + 1).toLocaleDateString('id-ID')
+                });
+            }
+            
+            return feedbacks;
+        }
+
+        // Initialize data
+        if(!localStorage.getItem('studentScores')) {
+            localStorage.setItem('studentScores', JSON.stringify(generateScores()));
+        }
+        if(!localStorage.getItem('attendance')) {
+            localStorage.setItem('attendance', JSON.stringify(generateAttendance()));
+        }
+        if(!localStorage.getItem('feedbacks')) {
+            localStorage.setItem('feedbacks', JSON.stringify(generateFeedbacks()));
+        }
+
+        let currentUser = null;
+        let currentFilter = 'all';
+
+        // Login Function
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Check teacher
+            if(username === SYSTEM_DATA.teacher.username && password === SYSTEM_DATA.teacher.password) {
+                currentUser = {...SYSTEM_DATA.teacher, role: 'teacher'};
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('teacherDashboard').classList.remove('hidden');
+                loadTeacherDashboard();
+                return;
+            }
+
+            // Check student
+            const student = SYSTEM_DATA.students.find(s => s.username === username && s.password === password);
+            if(student) {
+                currentUser = {...student, role: 'student'};
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('studentDashboard').classList.remove('hidden');
+                loadStudentDashboard();
+                return;
+            }
+
+            alert('Username atau password salah!');
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            document.getElementById('studentDashboard').classList.add('hidden');
+            document.getElementById('teacherDashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Load Student Dashboard
+        function loadStudentDashboard() {
+            document.getElementById('studentNameNav').textContent = currentUser.nama;
+            document.getElementById('studentClassNav').textContent = `Kelas ${currentUser.kelas}`;
+
+            const scores = JSON.parse(localStorage.getItem('studentScores'))[currentUser.username];
+            
+            // Stats Cards
+            const statsHTML = `
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm">Total XP</p>
+                            <p class="text-4xl font-bold mt-2">${scores.xp}</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm">Badge Terkumpul</p>
+                            <p class="text-4xl font-bold mt-2">${scores.completedBabs.length}/8</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-yellow-100 text-sm">Nilai Akhir</p>
+                            <p class="text-4xl font-bold mt-2">${scores.finalScore}</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm">Status</p>
+                            <p class="text-2xl font-bold mt-2">${scores.status}</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-4">
+                            ${scores.status === 'Lulus' ? 
+                                '<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
+                                '<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('studentStats').innerHTML = statsHTML;
+
+            loadMateriList();
+        }
+
+        // Load Materi List
+        function loadMateriList() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'))[currentUser.username];
+            let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
+
+            // Pretest Card
+            html += `
+                <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <h3 class="text-2xl font-bold mb-2">📝 Pre-Test</h3>
+                    <p class="mb-4 text-red-100">Tes awal sebelum belajar (50 soal)</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm">Nilai: <span class="text-2xl font-bold">${scores.pretest}</span></p>
+                            <p class="text-sm mt-1">XP: 100</p>
+                        </div>
+                        <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg font-bold">Selesai</span>
+                    </div>
+                </div>
+            `;
+
+            // Materi Cards
+            SYSTEM_DATA.materi.forEach((materi, index) => {
+                const completed = scores.completedBabs.includes(materi.id);
+                const quizScore = scores.quizzes[index];
+                html += `
+                    <div class="bg-white rounded-2xl shadow-lg p-6 fade-in hover:shadow-xl transition">
+                        <img src="${materi.gambar}" alt="${materi.judul}" class="w-full h-40 object-cover rounded-lg mb-4">
+                        <h3 class="text-xl font-bold mb-2">${materi.judul}</h3>
+                        <p class="text-gray-600 mb-4">${materi.deskripsi}</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                ${completed ? `
+                                    <p class="text-sm text-green-600 font-semibold">✓ Selesai</p>
+                                    <p class="text-sm">Nilai: ${quizScore} | XP: +50</p>
+                                ` : `
+                                    <p class="text-sm text-gray-500">Belum Selesai</p>
+                                `}
+                            </div>
+                            <button onclick="openMateri(${materi.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                                ${completed ? 'Lihat' : 'Mulai'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Posttest Card
+            html += `
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white fade-in">
+                    <h3 class="text-2xl font-bold mb-2">✅ Post-Test</h3>
+                    <p class="mb-4 text-green-100">Tes akhir setelah belajar semua materi (50 soal)</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm">Nilai: <span class="text-2xl font-bold">${scores.posttest}</span></p>
+                            <p class="text-sm mt-1">XP: 200</p>
+                        </div>
+                        <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg font-bold">Selesai</span>
+                    </div>
+                </div>
+            `;
+
+            html += '</div>';
+            document.getElementById('materiList').innerHTML = html;
+        }
+
+        // Open Materi Modal
+        function openMateri(materiId) {
+            const materi = SYSTEM_DATA.materi.find(m => m.id === materiId);
+            const modalContent = `
+                <div class="bg-gradient-to-br from-gray-50 to-blue-50">
+                    <div class="sticky top-0 bg-white shadow-md z-10 p-6 flex justify-between items-center border-b-4 border-blue-500">
+                        <div>
+                            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                ${materi.judul}
+                            </h2>
+                            <p class="text-gray-600 mt-1">${materi.deskripsi}</p>
+                        </div>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-4xl font-light transition hover:rotate-90 duration-300">
+                            &times;
+                        </button>
+                    </div>
+                    
+                    <div class="p-8">
+                        <img src="${materi.gambar}" alt="${materi.judul}" 
+                            class="w-full h-80 object-cover rounded-2xl shadow-2xl mb-8 hover:scale-105 transition duration-300">
+                        
+                        <div class="mb-8">
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="bg-red-500 rounded-full p-2">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Video Pembelajaran</h3>
+                            </div>
+                            <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-black" style="padding-bottom: 56.25%;">
+                                <iframe src="${materi.video}?rel=0&modestbranding=1" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    allowfullscreen 
+                                    class="absolute top-0 left-0 w-full h-full">
+                                </iframe>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="bg-blue-500 rounded-full p-2">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Materi Pembelajaran</h3>
+                            </div>
+                            <div class="prose prose-lg max-w-none">
+                                ${materi.konten}
+                            </div>
+                        </div>
+                        
+                        <div class="sticky bottom-0 pt-6">
+                            <button onclick="startQuiz(${materiId})" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 rounded-2xl font-bold text-xl 
+                                hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-3">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                                <span>Kerjakan Kuis Bab ${materiId}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalOverlay').classList.add('flex');
+        }
+
+        // Start Quiz
+        function startQuiz(babId) {
+            const quizKey = `bab${babId}`;
+            const questions = SYSTEM_DATA.quizBank[quizKey];
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            const userScore = scores[currentUser.username];
+            
+            let html = `
+                <div class="p-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Kuis Bab ${babId}</h2>
+                            <p class="text-gray-600 mt-2">Uji pemahaman Anda tentang materi yang sudah dipelajari</p>
+                        </div>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-4xl font-light transition">&times;</button>
+                    </div>
+                    
+                    <div class="mb-8 p-6 bg-white rounded-2xl shadow-lg border-l-4 border-blue-500">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-100 rounded-full p-3">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-800 mb-2">📋 Petunjuk Pengerjaan</h3>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Kuis terdiri dari <strong>10 soal pilihan ganda</strong></li>
+                                    <li>• Pilih jawaban yang paling tepat untuk setiap soal</li>
+                                    <li>• Nilai minimal lulus adalah <strong>70</strong></li>
+                                    <li>• Setelah lulus, Anda akan mendapat <strong>+50 XP dan Badge</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="quizForm" class="space-y-6">
+            `;
+            
+            questions.forEach((q, index) => {
+                const colors = ['from-blue-500 to-blue-600', 'from-green-500 to-green-600', 'from-purple-500 to-purple-600', 'from-orange-500 to-orange-600', 'from-pink-500 to-pink-600'];
+                const bgColor = colors[index % colors.length];
+                
+                html += `
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                        <div class="bg-gradient-to-r ${bgColor} p-4 flex items-center space-x-3">
+                            <div class="bg-white bg-opacity-30 rounded-full w-10 h-10 flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">${index + 1}</span>
+                            </div>
+                            <p class="text-white font-semibold text-lg flex-1">${q.soal}</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                ${q.pilihan.map((p, i) => {
+                                    const optionLabels = ['A', 'B', 'C', 'D'];
+                                    return `
+                                        <label class="flex items-center space-x-4 cursor-pointer group">
+                                            <input type="radio" name="q${index}" value="${i}" required 
+                                                class="w-5 h-5 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                            <div class="flex-1 p-4 rounded-xl border-2 border-gray-200 group-hover:border-blue-400 group-hover:bg-blue-50 transition-all duration-200">
+                                                <div class="flex items-center space-x-3">
+                                                    <span class="bg-gray-100 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center text-sm group-hover:bg-blue-100 group-hover:text-blue-700 transition">
+                                                        ${optionLabels[i]}
+                                                    </span>
+                                                    <span class="text-gray-700 font-medium">${p}</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    <div class="sticky bottom-0 pt-6">
+                        <button type="button" onclick="submitQuiz(${babId})" 
+                            class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-2xl font-bold text-xl 
+                            hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Submit Jawaban</span>
+                        </button>
+                    </div>
+                </form>
+                </div>
+            `;
+            
+            document.getElementById('modalContent').innerHTML = html;
+        }
+
+        // Submit Quiz (simulated - already has score)
+        function submitQuiz(babId) {
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            const userScore = scores[currentUser.username];
+            const quizScore = userScore.quizzes[babId - 1];
+            
+            alert(`Kuis selesai!\nNilai Anda: ${quizScore}\n\n${quizScore >= 70 ? '✓ Lulus! Badge Bab ' + babId + ' diperoleh! +50 XP' : '✗ Tidak lulus. Nilai minimum 70.'}`);
+            closeModal();
+            loadStudentDashboard();
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+            document.getElementById('modalOverlay').classList.remove('flex');
+        }
+
+        // Show Student Tab
+        function showStudentTab(tab) {
+            ['materi', 'absensi', 'leaderboard', 'badges', 'feedback'].forEach(t => {
+                document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('border-blue-600', 'text-blue-600');
+                document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.add('text-gray-600');
+                document.getElementById(`tabContent${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.add('hidden');
+            });
+            
+            document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('border-blue-600', 'text-blue-600');
+            document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('text-gray-600');
+            document.getElementById(`tabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+            
+            if(tab === 'absensi') loadAbsensiSiswa();
+            if(tab === 'leaderboard') loadLeaderboard();
+            if(tab === 'badges') loadBadges();
+            if(tab === 'feedback') loadFeedbackForm();
+        }
+
+        // Load Absensi Siswa
+        function loadAbsensiSiswa() {
+            const attendance = JSON.parse(localStorage.getItem('attendance'));
+            const userAtt = attendance[currentUser.username];
+            
+            let html = `
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-6 text-center">✅ Rekap Kehadiran Saya</h3>
+                    
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white text-center">
+                            <p class="text-3xl font-bold">${userAtt.hadir}</p>
+                            <p class="text-sm mt-1">Hadir</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 text-white text-center">
+                            <p class="text-3xl font-bold">${userAtt.izin}</p>
+                            <p class="text-sm mt-1">Izin</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white text-center">
+                            <p class="text-3xl font-bold">${userAtt.sakit}</p>
+                            <p class="text-sm mt-1">Sakit</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-4 text-white text-center">
+                            <p class="text-3xl font-bold">${userAtt.alpha}</p>
+                            <p class="text-sm mt-1">Alpha</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Persentase Kehadiran -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold">Persentase Kehadiran</h4>
+                            <span class="text-3xl font-bold ${userAtt.persentase >= 90 ? 'text-green-600' : userAtt.persentase >= 80 ? 'text-yellow-600' : 'text-red-600'}">${userAtt.persentase}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-6">
+                            <div class="h-6 rounded-full ${userAtt.persentase >= 90 ? 'bg-green-500' : userAtt.persentase >= 80 ? 'bg-yellow-500' : 'bg-red-500'}" style="width: ${userAtt.persentase}%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">
+                            ${userAtt.persentase >= 90 ? '✓ Kehadiran sangat baik!' : userAtt.persentase >= 80 ? '⚠ Kehadiran cukup baik' : '✗ Tingkatkan kehadiran Anda'}
+                        </p>
+                    </div>
+                    
+                    <!-- Detail Kehadiran Per Pertemuan -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg">
+                        <h4 class="text-lg font-bold mb-4">Detail Kehadiran Per Pertemuan</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            `;
+            
+            userAtt.records.forEach((status, index) => {
+                const statusColors = {
+                    'Hadir': 'bg-green-100 text-green-700 border-green-300',
+                    'Izin': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+                    'Sakit': 'bg-blue-100 text-blue-700 border-blue-300',
+                    'Alpha': 'bg-red-100 text-red-700 border-red-300'
+                };
+                
+                html += `
+                    <div class="border-2 ${statusColors[status]} rounded-lg p-3 text-center">
+                        <p class="text-sm font-semibold">Pertemuan ${index + 1}</p>
+                        <p class="text-xs mt-1">${status}</p>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('absensiSiswaContent').innerHTML = html;
+        }
+
+        // Load Leaderboard
+        function loadLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            const leaderboard = Object.entries(scores).map(([username, data]) => {
+                const student = SYSTEM_DATA.students.find(s => s.username === username);
+                return {
+                    nama: student.nama,
+                    kelas: student.kelas,
+                    xp: data.xp,
+                    finalScore: data.finalScore
+                };
+            }).sort((a, b) => b.xp - a.xp);
+
+            let html = '<div class="space-y-4">';
+            html += '<h3 class="text-2xl font-bold mb-6 text-center">🏆 Leaderboard Kelas 8</h3>';
+            
+            leaderboard.forEach((student, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                const bgColor = index < 3 ? 'bg-gradient-to-r from-yellow-100 to-yellow-200' : 'bg-gray-50';
+                
+                html += `
+                    <div class="${bgColor} rounded-xl p-4 flex items-center justify-between hover:shadow-md transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-3xl font-bold w-12 text-center">${medal}</div>
+                            <div>
+                                <p class="font-bold text-lg">${student.nama}</p>
+                                <p class="text-sm text-gray-600">${student.kelas} • Nilai: ${student.finalScore}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-blue-600">${student.xp}</p>
+                            <p class="text-xs text-gray-600">XP</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('leaderboardContent').innerHTML = html;
+        }
+
+        // Load Badges
+        function loadBadges() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'))[currentUser.username];
+            const badges = [
+                {id: 1, name: 'Pengenalan Komputer', icon: '💻'},
+                {id: 2, name: 'Hardware Expert', icon: '🔧'},
+                {id: 3, name: 'Software Master', icon: '📱'},
+                {id: 4, name: 'Windows Navigator', icon: '🪟'},
+                {id: 5, name: 'File Manager', icon: '📁'},
+                {id: 6, name: 'Typing Pro', icon: '⌨️'},
+                {id: 7, name: 'Word Wizard', icon: '📝'},
+                {id: 8, name: 'Digital Citizen', icon: '🌐'}
+            ];
+
+            let html = '<div class="grid grid-cols-2 md:grid-cols-4 gap-6">';
+            badges.forEach(badge => {
+                const earned = scores.completedBabs.includes(badge.id);
+                html += `
+                    <div class="text-center ${earned ? 'badge-earned' : 'badge-locked'} cursor-pointer">
+                        <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4 text-5xl shadow-lg">
+                            ${badge.icon}
+                        </div>
+                        <p class="font-bold">${badge.name}</p>
+                        <p class="text-sm ${earned ? 'text-green-600' : 'text-gray-400'}">${earned ? '✓ Terbuka' : '🔒 Terkunci'}</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            html += `
+                <div class="mt-8 p-6 bg-blue-50 rounded-xl">
+                    <h3 class="text-xl font-bold mb-2">Progress Badge</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 bg-gray-200 rounded-full h-4">
+                            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-4 rounded-full" style="width: ${(scores.completedBabs.length / 8) * 100}%"></div>
+                        </div>
+                        <span class="font-bold">${scores.completedBabs.length}/8</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('badgesContent').innerHTML = html;
+        }
+
+        // Load Feedback Form
+        function loadFeedbackForm() {
+            const html = `
+                <div class="max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-6 text-center">💬 Berikan Feedback</h3>
+                    <form onsubmit="submitFeedback(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold mb-2">Rating Pembelajaran</label>
+                            <div class="flex space-x-4">
+                                ${[1,2,3,4,5].map(i => `
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="rating" value="${i}" required class="hidden peer">
+                                        <span class="text-4xl peer-checked:scale-125 transition">⭐</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-semibold mb-2">Bab Favorit</label>
+                            <select name="babFavorit" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500">
+                                <option value="">Pilih Bab</option>
+                                ${SYSTEM_DATA.materi.map(m => `<option value="Bab ${m.id}">Bab ${m.id} - ${m.judul}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-semibold mb-2">Bab Paling Sulit</label>
+                            <select name="babSulit" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500">
+                                <option value="">Pilih Bab</option>
+                                ${SYSTEM_DATA.materi.map(m => `<option value="Bab ${m.id}">Bab ${m.id} - ${m.judul}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-semibold mb-2">Komentar & Saran</label>
+                            <textarea name="komentar" required rows="5" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Bagikan pengalaman belajar Anda..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-lg transition">
+                            Kirim Feedback
+                        </button>
+                    </form>
+                </div>
+            `;
+            document.getElementById('feedbackForm').innerHTML = html;
+        }
+
+        // Submit Feedback
+        function submitFeedback(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const feedbacks = JSON.parse(localStorage.getItem('feedbacks'));
+            
+            feedbacks.push({
+                nama: currentUser.nama,
+                kelas: currentUser.kelas,
+                rating: parseInt(formData.get('rating')),
+                babFavorit: formData.get('babFavorit'),
+                babSulit: formData.get('babSulit'),
+                komentar: formData.get('komentar'),
+                tanggal: new Date().toLocaleDateString('id-ID')
+            });
+            
+            localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+            alert('✓ Terima kasih atas feedback Anda!');
+            event.target.reset();
+        }
+
+        // Teacher Dashboard
+        function loadTeacherDashboard() {
+            showTeacherTab('analytics');
+        }
+
+        // Filter Class
+        function filterClass(kelas) {
+            currentFilter = kelas;
+            ['filterAll', 'filterVIIIa', 'filterVIIIb'].forEach(id => {
+                document.getElementById(id).classList.remove('bg-blue-600', 'text-white');
+                document.getElementById(id).classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            const buttonId = kelas === 'all' ? 'filterAll' : `filter${kelas}`;
+            document.getElementById(buttonId).classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById(buttonId).classList.add('bg-blue-600', 'text-white');
+            
+            // Reload current tab
+            const activeTab = document.querySelector('[id^="teacherTab"][class*="border-purple-600"]').id.replace('teacherTab', '').toLowerCase();
+            showTeacherTab(activeTab);
+        }
+
+        // Show Teacher Tab
+        function showTeacherTab(tab) {
+            ['analytics', 'students', 'absensi', 'feedbacks'].forEach(t => {
+                document.getElementById(`teacherTab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('border-purple-600', 'text-purple-600');
+                document.getElementById(`teacherTab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.add('text-gray-600');
+                document.getElementById(`teacherTabContent${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.add('hidden');
+            });
+            
+            document.getElementById(`teacherTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('border-purple-600', 'text-purple-600');
+            document.getElementById(`teacherTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('text-gray-600');
+            document.getElementById(`teacherTabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+            
+            if(tab === 'analytics') loadAnalytics();
+            if(tab === 'students') loadStudentsTable();
+            if(tab === 'absensi') loadAbsensi();
+            if(tab === 'feedbacks') loadFeedbacksView();
+        }
+
+        // Load Analytics with Charts
+        function loadAnalytics() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            let students = SYSTEM_DATA.students;
+            if(currentFilter !== 'all') {
+                students = students.filter(s => s.kelas === currentFilter);
+            }
+            
+            let html = `
+                <div class="space-y-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-bold mb-4">📊 Pretest vs Posttest</h3>
+                            <canvas id="chartPretestPosttest"></canvas>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-bold mb-4">📈 Distribusi Nilai Siswa</h3>
+                            <canvas id="chartNilaiDistribusi"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-bold mb-4">✅ Tingkat Kehadiran</h3>
+                            <canvas id="chartAbsensi"></canvas>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-bold mb-4">📚 Nilai Per Materi (Bab 1-8)</h3>
+                            <canvas id="chartNilaiPerMateri"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('analyticsContent').innerHTML = html;
+            
+            // Wait for DOM to render
+            setTimeout(() => {
+                // Chart 1: Pretest vs Posttest
+                const pretestData = students.map(s => scores[s.username].pretest);
+                const posttestData = students.map(s => scores[s.username].posttest);
+                
+                new Chart(document.getElementById('chartPretestPosttest'), {
+                    type: 'bar',
+                    data: {
+                        labels: students.map(s => s.nama.split(' ')[0]),
+                        datasets: [{
+                            label: 'Pretest',
+                            data: pretestData,
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        }, {
+                            label: 'Posttest',
+                            data: posttestData,
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {beginAtZero: true, max: 100}
+                        }
+                    }
+                });
+                
+                // Chart 2: Distribusi Nilai
+                const nilaiData = students.map(s => scores[s.username].finalScore);
+                new Chart(document.getElementById('chartNilaiDistribusi'), {
+                    type: 'line',
+                    data: {
+                        labels: students.map(s => s.nama.split(' ')[0]),
+                        datasets: [{
+                            label: 'Nilai Akhir',
+                            data: nilaiData,
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {beginAtZero: true, max: 100}
+                        }
+                    }
+                });
+                
+                // Chart 3: Absensi
+                const attendance = JSON.parse(localStorage.getItem('attendance'));
+                const absensiData = students.map(s => attendance[s.username].persentase);
+                
+                new Chart(document.getElementById('chartAbsensi'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Hadir 90-100%', 'Hadir 80-89%', 'Hadir <80%'],
+                        datasets: [{
+                            data: [
+                                absensiData.filter(p => p >= 90).length,
+                                absensiData.filter(p => p >= 80 && p < 90).length,
+                                absensiData.filter(p => p < 80).length
+                            ],
+                            backgroundColor: [
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(251, 191, 36, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+                
+                // Chart 4: Nilai Per Materi
+                const babAvg = [];
+                for(let i = 0; i < 8; i++) {
+                    const avg = students.reduce((sum, s) => sum + scores[s.username].quizzes[i], 0) / students.length;
+                    babAvg.push(Math.round(avg));
+                }
+                
+                new Chart(document.getElementById('chartNilaiPerMateri'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Bab 1', 'Bab 2', 'Bab 3', 'Bab 4', 'Bab 5', 'Bab 6', 'Bab 7', 'Bab 8'],
+                        datasets: [{
+                            label: 'Rata-rata Nilai',
+                            data: babAvg,
+                            backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                            borderColor: 'rgb(168, 85, 247)',
+                            pointBackgroundColor: 'rgb(168, 85, 247)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Load Students Table
+        function loadStudentsTable() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            let students = SYSTEM_DATA.students;
+            if(currentFilter !== 'all') {
+                students = students.filter(s => s.kelas === currentFilter);
+            }
+            
+            let html = `
+                <div class="mb-4 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Data Nilai Siswa</h3>
+                    <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                        📥 Export CSV
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left">No</th>
+                                <th class="px-4 py-3 text-left">Nama</th>
+                                <th class="px-4 py-3 text-left">Kelas</th>
+                                <th class="px-4 py-3 text-center">Pretest</th>
+                                <th class="px-4 py-3 text-center">Rata² Kuis</th>
+                                <th class="px-4 py-3 text-center">Posttest</th>
+                                <th class="px-4 py-3 text-center">Nilai Akhir</th>
+                                <th class="px-4 py-3 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+            `;
+            
+            students.forEach((student, index) => {
+                const score = scores[student.username];
+                const avgQuiz = Math.round(score.quizzes.reduce((a,b) => a+b, 0) / 8);
+                const statusColor = score.status === 'Lulus' ? 'text-green-600' : 'text-red-600';
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">${index + 1}</td>
+                        <td class="px-4 py-3 font-medium">${student.nama}</td>
+                        <td class="px-4 py-3">${student.kelas}</td>
+                        <td class="px-4 py-3 text-center">${score.pretest}</td>
+                        <td class="px-4 py-3 text-center">${avgQuiz}</td>
+                        <td class="px-4 py-3 text-center">${score.posttest}</td>
+                        <td class="px-4 py-3 text-center font-bold">${score.finalScore}</td>
+                        <td class="px-4 py-3 text-center font-semibold ${statusColor}">${score.status}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            document.getElementById('studentsTableContent').innerHTML = html;
+        }
+
+        // Export CSV
+        function exportCSV() {
+            const scores = JSON.parse(localStorage.getItem('studentScores'));
+            let students = SYSTEM_DATA.students;
+            if(currentFilter !== 'all') {
+                students = students.filter(s => s.kelas === currentFilter);
+            }
+            
+            let csv = 'No,Nama,Kelas,Pretest,Rata-rata Kuis,Posttest,Nilai Akhir,Status\n';
+            students.forEach((student, index) => {
+                const score = scores[student.username];
+                const avgQuiz = Math.round(score.quizzes.reduce((a,b) => a+b, 0) / 8);
+                csv += `${index + 1},${student.nama},${student.kelas},${score.pretest},${avgQuiz},${score.posttest},${score.finalScore},${score.status}\n`;
+            });
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data_nilai_${currentFilter}.csv`;
+            a.click();
+        }
+
+        // Load Absensi
+        function loadAbsensi() {
+            const attendance = JSON.parse(localStorage.getItem('attendance'));
+            let students = SYSTEM_DATA.students;
+            if(currentFilter !== 'all') {
+                students = students.filter(s => s.kelas === currentFilter);
+            }
+            
+            let html = `
+                <div class="mb-4 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Rekap Kehadiran Siswa</h3>
+                    <button onclick="exportAbsensiCSV()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                        📥 Export Absensi CSV
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left">No</th>
+                                <th class="px-4 py-3 text-left">Nama</th>
+                                <th class="px-4 py-3 text-left">Kelas</th>
+                                <th class="px-4 py-3 text-center">Hadir</th>
+                                <th class="px-4 py-3 text-center">Izin</th>
+                                <th class="px-4 py-3 text-center">Sakit</th>
+                                <th class="px-4 py-3 text-center">Alpha</th>
+                                <th class="px-4 py-3 text-center">Persentase</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+            `;
+            
+            students.forEach((student, index) => {
+                const att = attendance[student.username];
+                const persentaseColor = att.persentase >= 90 ? 'text-green-600' : att.persentase >= 80 ? 'text-yellow-600' : 'text-red-600';
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">${index + 1}</td>
+                        <td class="px-4 py-3 font-medium">${student.nama}</td>
+                        <td class="px-4 py-3">${student.kelas}</td>
+                        <td class="px-4 py-3 text-center">${att.hadir}</td>
+                        <td class="px-4 py-3 text-center">${att.izin}</td>
+                        <td class="px-4 py-3 text-center">${att.sakit}</td>
+                        <td class="px-4 py-3 text-center">${att.alpha}</td>
+                        <td class="px-4 py-3 text-center font-bold ${persentaseColor}">${att.persentase}%</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            document.getElementById('absensiContent').innerHTML = html;
+        }
+
+        // Export Absensi CSV
+        function exportAbsensiCSV() {
+            const attendance = JSON.parse(localStorage.getItem('attendance'));
+            let students = SYSTEM_DATA.students;
+            if(currentFilter !== 'all') {
+                students = students.filter(s => s.kelas === currentFilter);
+            }
+            
+            let csv = 'No,Nama,Kelas,Hadir,Izin,Sakit,Alpha,Persentase\n';
+            students.forEach((student, index) => {
+                const att = attendance[student.username];
+                csv += `${index + 1},${student.nama},${student.kelas},${att.hadir},${att.izin},${att.sakit},${att.alpha},${att.persentase}%\n`;
+            });
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `absensi_${currentFilter}.csv`;
+            a.click();
+        }
+
+        // Load Feedbacks View
+        function loadFeedbacksView() {
+            const feedbacks = JSON.parse(localStorage.getItem('feedbacks'));
+            let filteredFeedbacks = feedbacks;
+            if(currentFilter !== 'all') {
+                filteredFeedbacks = feedbacks.filter(f => f.kelas === currentFilter);
+            }
+            
+            // Statistics
+            const avgRating = (filteredFeedbacks.reduce((sum, f) => sum + f.rating, 0) / filteredFeedbacks.length).toFixed(1);
+            const babFavoritCount = {};
+            const babSulitCount = {};
+            
+            filteredFeedbacks.forEach(f => {
+                babFavoritCount[f.babFavorit] = (babFavoritCount[f.babFavorit] || 0) + 1;
+                babSulitCount[f.babSulit] = (babSulitCount[f.babSulit] || 0) + 1;
+            });
+            
+            const topFavorit = Object.entries(babFavoritCount).sort((a,b) => b[1] - a[1])[0];
+            const topSulit = Object.entries(babSulitCount).sort((a,b) => b[1] - a[1])[0];
+            
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl p-6 text-white">
+                        <p class="text-sm opacity-90">Rating Rata-rata</p>
+                        <p class="text-4xl font-bold mt-2">${avgRating} ⭐</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
+                        <p class="text-sm opacity-90">Bab Favorit</p>
+                        <p class="text-2xl font-bold mt-2">${topFavorit ? topFavorit[0] : '-'}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white">
+                        <p class="text-sm opacity-90">Bab Tersulit</p>
+                        <p class="text-2xl font-bold mt-2">${topSulit ? topSulit[0] : '-'}</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold mb-4">💬 Feedback dari Siswa (${filteredFeedbacks.length} feedback)</h3>
+            `;
+            
+            filteredFeedbacks.forEach(feedback => {
+                html += `
+                    <div class="bg-white border rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="font-bold text-lg">${feedback.nama}</p>
+                                <p class="text-sm text-gray-600">${feedback.kelas} • ${feedback.tanggal}</p>
+                            </div>
+                            <div class="text-yellow-500 text-xl">
+                                ${'⭐'.repeat(feedback.rating)}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Bab Favorit:</span>
+                                <span class="font-semibold ml-2">${feedback.babFavorit}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Bab Sulit:</span>
+                                <span class="font-semibold ml-2">${feedback.babSulit}</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">"${feedback.komentar}"</p>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('feedbacksContent').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
